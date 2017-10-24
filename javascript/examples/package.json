@@ -1,0 +1,30 @@
+{
+  "name": "@metaparticle/sync-example",
+  "version": "0.0.1",
+  "description": "Example of using library for distributed synchronization",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/metaparticle-io/sync.git"
+  },
+  "files": [
+    "*.js"
+  ],
+  "main": "lock.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node lock.js"
+  },
+  "author": "Brendan Burns",
+  "license": "MIT",
+  "dependencies": {
+    "@metaparticle/sync": "^0.0.1"
+  },
+  "bugs": {
+    "url": "https://github.com/metaparticle-io/sync/issues"
+  },
+  "homepage": "https://github.com/metaparticle-io/sync/javascript",
+  "keywords": [
+    "cloud",
+    "containers"
+  ]
+}
