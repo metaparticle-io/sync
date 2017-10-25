@@ -25,7 +25,7 @@
                     // console.log('statusCode:', response && response.statusCode);
                     var code = response.statusCode;
                     if (code == 404 || code == 200) {
-                        this.updateLock(true);
+                        this.updateLock(false);
                         return;
                     }
                     if (code != 200) {
@@ -35,20 +35,29 @@
                 });
         }
 
-        updateLock(notify) {
+        updateLock(lockHeld) {
             request.put(this.baseUrl + '/locks/' + this.name,
                 (error, response) => {
                     // console.log('error:', error);
                     // console.log('statusCode:', response && response.statusCode);
                     var code = response.statusCode;
                     if (code == 200) {
-                        if (notify && this.lockAcquiredFn) {
+                        if (!lockHeld) {
                             this.lockAcquiredFn();
                         }
                         setTimeout(this.holdLock.bind(this), 10 * 1000);
                     } else {
-                        // console.log('waiting for lock');
-                        setTimeout(this.lockInternal.bind(this), 10 * 1000);
+                        if (lockHeld) {
+                            console.log('Unexpected code: ' + code);
+                            if (this.lockLostFn) {
+                                this.lockLostFn();
+                            } else {
+                                process.exit();
+                            }
+                        } else {
+                            // console.log('waiting for lock');
+                            setTimeout(this.lockInternal.bind(this), 10 * 1000);
+                        }
                     }
                 });
         }
@@ -66,12 +75,8 @@
                         this.updateLock(false);
                         return;
                     }
-                    console.log('Unexpected code: ' + code);
-                    if (this.lockLostFn) {
-                        this.lockLostFn();
-                    } else {
-                        process.exit();
-                    }
+                    // console.log('unexpected code getting lock: ' + code);
+                    setTimeout(this.holdLock.bind(this), 10 * 1000);
                 });
         }
 
