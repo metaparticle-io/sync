@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: lock-js
+  name: lock-js
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      run: lock-js
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: lock-js 
+    spec:
+      containers:
+      - image: brendanburns/elector
+        imagePullPolicy: Always
+        name: elector
+        resources: {}
+      - image: brendanburns/sync-js
+        name: example
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
