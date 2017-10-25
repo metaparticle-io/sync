@@ -1,6 +1,6 @@
 {
   "name": "@metaparticle/sync",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Library for distributed synchronization",
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   "author": "Brendan Burns",
   "license": "MIT",
   "dependencies": {
+    "loglevel": "^1.5.1",
     "request": "^2.83.0"
   },
   "bugs": {

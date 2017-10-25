@@ -1,5 +1,10 @@
 (function() {
     var request = require('request');
+    var log = require('loglevel');
+
+    module.exports.debug = function() {
+        log.setLevel("debug");
+    }
 
     module.exports.Lock = class Lock {
         constructor(name, lockAcquiredFn, lockLostFn) {
@@ -21,8 +26,16 @@
         lockInternal() {
             request(this.baseUrl + '/locks/' + this.name,
                 (error, response) => {
-                    // console.log('error:', error);
-                    // console.log('statusCode:', response && response.statusCode);
+                    log.debug('error:', error);
+                    log.debug('statusCode:', response && response.statusCode);
+                    if (error) {
+                        if (error.code == 'ECONNREFUSED') {
+                            log.error('Could not connect to ' + this.baseUrl + ' is the elector sidecar running?');
+                        } else {
+                            log.error('Unexpected error: ' + error);
+                        }
+                        process.exit(1);
+                    }
                     var code = response.statusCode;
                     if (code == 404 || code == 200) {
                         this.updateLock(false);
@@ -38,8 +51,8 @@
         updateLock(lockHeld) {
             request.put(this.baseUrl + '/locks/' + this.name,
                 (error, response) => {
-                    // console.log('error:', error);
-                    // console.log('statusCode:', response && response.statusCode);
+                    log.debug('error:', error);
+                    log.debug('statusCode:', response && response.statusCode);
                     var code = response.statusCode;
                     if (code == 200) {
                         if (!lockHeld) {
@@ -48,7 +61,7 @@
                         setTimeout(this.holdLock.bind(this), 10 * 1000);
                     } else {
                         if (lockHeld) {
-                            console.log('Unexpected code: ' + code);
+                            log.warn('Unexpected code: ' + code);
                             if (this.lockLostFn) {
                                 this.lockLostFn();
                             } else {
@@ -68,14 +81,14 @@
             }
             request(this.baseUrl + '/locks/' + this.name,
                 (error, response) => {
-                    // console.log('error:', error);
-                    // console.log('statusCode:', response && response.statusCode);
+                    log.debug('error:', error);
+                    log.debug('statusCode:', response && response.statusCode);
                     var code = response.statusCode;
                     if (code == 200) {
                         this.updateLock(true);
                         return;
                     }
-                    // console.log('unexpected code getting lock: ' + code);
+                    log.warn('unexpected code getting lock: ' + code);
                     setTimeout(this.holdLock.bind(this), 10 * 1000);
                 });
         }
