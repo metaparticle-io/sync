@@ -17,7 +17,7 @@
   "author": "Brendan Burns",
   "license": "MIT",
   "dependencies": {
-    "@metaparticle/sync": "^0.0.1"
+    "@metaparticle/sync": "0.0.2"
   },
   "bugs": {
     "url": "https://github.com/metaparticle-io/sync/issues"

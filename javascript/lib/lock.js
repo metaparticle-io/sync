@@ -72,7 +72,7 @@
                     // console.log('statusCode:', response && response.statusCode);
                     var code = response.statusCode;
                     if (code == 200) {
-                        this.updateLock(false);
+                        this.updateLock(true);
                         return;
                     }
                     // console.log('unexpected code getting lock: ' + code);
