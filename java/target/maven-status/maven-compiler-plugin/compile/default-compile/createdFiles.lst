@@ -1,7 +1,0 @@
-io/metaparticle/sync/Election.class
-io/metaparticle/sync/examples/ElectionMain.class
-io/metaparticle/sync/Lock.class
-io/metaparticle/containerlib/elector/examples/Main.class
-io/metaparticle/sync/Election$1.class
-io/metaparticle/sync/Lock$1.class
-io/metaparticle/sync/LockListener.class
