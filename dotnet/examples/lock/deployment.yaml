@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: lock-js
+  name: lock-js
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      run: lock-js
+  template:
+    metadata:
+      labels:
+        run: lock-js 
+    spec:
+      containers:
+      - image: brendanburns/elector
+        name: elector
+      - image: brendanburns/sync-dotnet
+        name: example

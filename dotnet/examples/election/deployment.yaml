@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: elector-dotnet
+  name: elector-dotnet
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: elector-dotnet
+  template:
+    metadata:
+      labels:
+        run: elector-dotnet
+    spec:
+      containers:
+      - image: brendanburns/elector
+        imagePullPolicy: Always
+        name: elector
+        resources: {}
+      # Replace the container below with your container.
+      - image: brendanburns/dotnet-election
+        name: example

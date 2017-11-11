@@ -24,14 +24,14 @@ namespace Metaparticle.Sync {
             this.endSignal = new Object();
         }
 
-        public void shutdown() {
+        public void Shutdown() {
             running = false;
             lock (lck) {
                 Monitor.Pulse(lck);
             }
         }
 
-        public void run() {
+        public void Run() {
             running = true;
             while (running) {
                 lck.WaitOne();

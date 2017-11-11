@@ -1,10 +1,17 @@
 # Examples MetaParticle Sync library for Java
 
+Metaparticle/Sync for Java is a library that implements distributed synchronization
+for cloud-native applications using a container side-car and Kubernetes primitives.
+
+Metaparticle/Sync for Java can be used for [locking](#locking-example) or for
+[leader election](#election-example)
+
 ## Adding the Library
 To add the `io.metaparticle.sync` library to your code you need to do two things:
 
    * Import the library: `import io.metaparticle.sync.*;`
-   * Run the `elector` side-car container. This is typically done via a Kubernetes Deployment (see examples below)
+   * Run the `elector` side-car container. This is typically done via a Kubernetes Deployment
+   (see [examples](#deploying) below)
 
 ## Locking Example
 The simplest usage is to deploy mutual exclusion locks between different distributed components
@@ -34,8 +41,11 @@ Simply creating a lock doesn't cause mutual exclusion. You also need to call `lo
 you are done, you call `lock.unlock()` to release the lock. Locks have a TTL (time to live) so
 in the event of a failure, the lock will also be eventually lost.
 
+Locks implement the `java.util.concurrent.Lock` interface and are thus compatible with locks any
+where in a Java program.
+
 ### Deploying
-To deploy code using the `@metaparticle/sync` package, you need to also include a side-car that
+To deploy code using the `io.metaparticle.sync` package, you need to also include a side-car that
 does the heavy lifting for the lock. Your code and the sidecar should both be package as containers
 and then deployed as a Kubernetes Pod.
 
@@ -96,7 +106,7 @@ public class ElectionMain {
 ```
 
 ### Deploying leader election
-As with locking, you need to deploy the elector side-car to take advantage of `@metaparticle/sync` elections. Here's an example Kubernetes Deployment which deploys three leader replicas:
+As with locking, you need to deploy the elector side-car to take advantage of `io.metaparticle.sync` elections. Here's an example Kubernetes Deployment which deploys three leader replicas:
 
 ```yaml
 apiVersion: extensions/v1beta1

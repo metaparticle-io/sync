@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageVersion>0.2.0-beta</PackageVersion>
+    <Authors>The Metaparticle Project Authors</Authors>
+    <Copyright>2017 The Metaparticle Project Authors</Copyright>
+    <Description>Client library for the Metaparticle synchronization.</Description>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/metaparticle-io/sync</PackageProjectUrl>
+    <PackageTags>kubernetes;docker;containers;</PackageTags>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>Metaparticle.Sync</RootNamespace>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Metaparticle.Sync\Sync.csproj" />
+  </ItemGroup>
+</Project>

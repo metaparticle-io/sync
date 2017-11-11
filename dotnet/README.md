@@ -1,15 +1,15 @@
-# Examples MetaParticle Sync library for Javascript
+# Examples MetaParticle Sync library for Dotnet Core
 
-Metaparticle/Sync for Javascript is a library that implements distributed synchronization
+Metaparticle/Sync for Dotnet Core is a library that implements distributed synchronization
 for cloud-native applications using a container side-car and Kubernetes primitives.
 
-Metaparticle/Sync for Javascript can be used for [locking](#locking-example) or for
+Metaparticle/Sync for Dotnet Core can be used for [locking](#locking-example) or for
 [leader election](#election-example)
 
 ## Adding the Library
-To add the `@metaparticle/sync` library to your code you need to do two things:
+To add the `Metaparticle.Sync` library to your code you need to do two things:
 
-   * Import the library, this is commonly done with: `var mp = require('@metaparticle/sync');`
+   * Import the library, this is commonly done with: `using Metaparticle.Sync`
    * Run the `elector` side-car container. This is typically done via a Kubernetes Deployment (see examples below)
 
 ## Locking Example
@@ -18,32 +18,26 @@ The simplest usage is to deploy mutual exclusion locks between different distrib
 ### Code
 Here's the code for a simple locking example, that locks a lock named `test` and holds it for 45 seconds.
 
-```javascript
-// Import the library
-var mp = require('@metaparticle/sync');
+```cs
+namespace LockExample
+{
+  using System;
+  using System.Threading.Tasks;
 
-// Create a new lock.
-var lock = new mp.Lock(
-    // The name of the lock.
-    'test',
-    // This handler is called when the lock is acquired.
-    () => {
-       console.log('I have the lock!');
-       console.log('Holding the lock for 45 seconds');
-       setTimeout(() => {
-           // Unlock after 45 seconds.
-           lock.unlock();
-           console.log('Unlocked');
-       }, 45 * 1000);
-    },
-    // [optional] this handler is called when the lock is lost
-    () => {
-       console.log('I lost the lock!');
-    });
+  using Metaparticle.Sync;
 
-// Kick off the lock, eventually this will call the callbacks above.
-console.log('Attempting to lock');
-lock.lock();
+  public class LockMain {
+    public static void Main(string[] args) {
+      Console.WriteLine("Locking");
+      var l = new Lock("test");
+      l.WaitOne();
+      Console.WriteLine("Acquired lock, waiting for 45 seconds.");
+      Task.Delay(45 * 1000).Wait();
+      l.Release();
+      Console.WriteLine("Lock released.");
+    }
+  }
+}
 ```
 
 You'll notice that a lock is made up of three things:
@@ -56,7 +50,7 @@ you are done, you call `lock.unlock()` to release the lock. Locks have a TTL (ti
 in the event of a failure, the lock will also be eventually lost.
 
 ### Deploying
-To deploy code using the `@metaparticle/sync` package, you need to also include a side-car that
+To deploy code using the `Metaparticle.Sync` package, you need to also include a side-car that
 does the heavy lifting for the lock. Your code and the sidecar should both be package as containers
 and then deployed as a Kubernetes Pod.
 
@@ -67,23 +61,23 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    run: lock-js
-  name: lock-js
+    run: lock-dotnet
+  name: lock-dotnet
   namespace: default
 spec:
   replicas: 2
   selector:
     matchLabels:
-      run: lock-js
+      run: lock-dotnet
   template:
     metadata:
       labels:
-        run: lock-js 
+        run: lock-dotnet 
     spec:
       containers:
       - image: brendanburns/elector
         name: elector
-      - image: brendanburns/sync-js
+      - image: brendanburns/sync-dotnet
         name: example
 ```
 
@@ -96,47 +90,63 @@ leader is chosen. This is an extremely useful pattern for implementing a variety
 of data to be owned/maintained by the leader.
 
 ### Code
-Implementing leader election in `@metaparticle/sync` is simple, here is code that performs
+Implementing leader election in `Metaparticle.Sync` is simple, here is code that performs
 leader election for a shard named `test`.
 
-```javascript
-var mp = require('@metaparticle/sync');
+```cs
+namespace ElectionExample
+{
+  using System;
+  using System.Threading;
+  using System.Threading.Tasks;
 
-var election = new mp.Election(
-    // Name of the election shard
-    'test',
-    // Event handler, called when a program becomes the leader.
-    () => {
-        console.log('I am the leader');
-    },
-    // Event handler, called when a program that was leader is no longer leader.
-    () => {
-        console.log('I lost the leader');
-    });
+  using Metaparticle.Sync;
 
-election.run();
+  public class ElectionMain {
+    public static void Main(string[] args) {
+      var block = new Object();
+      var election = new Election(
+        "test",
+        () => {
+          Console.WriteLine("I am the leader!");
+          Task.Delay(5 * 1000).Wait();
+          Monitor.Pulse(block);
+        },
+        () => {
+          Console.WriteLine("I lost the leader!");
+        });
+      Task.Run(() => {
+        election.Run();
+      });
+      Monitor.Wait(block);
+      election.Shutdown();
+      // Wait for a while to let someone else win the election.
+      Task.Delay(new Random().Next(40, 60) * 1000).Wait();
+    }
+  }
+}
 ```
 
 ### Deploying leader election
-As with locking, you need to deploy the elector side-car to take advantage of `@metaparticle/sync` elections. Here's an example Kubernetes Deployment which deploys three leader replicas:
+As with locking, you need to deploy the elector side-car to take advantage of `Metaparticle.Sync` elections. Here's an example Kubernetes Deployment which deploys three leader replicas:
 
 ```yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    run: elector-js
-  name: elector-js
+    run: elector-dotnet
+  name: elector-dotnet
   namespace: default
 spec:
   replicas: 3
   selector:
     matchLabels:
-      run: elector-js
+      run: elector-dotnet
   template:
     metadata:
       labels:
-        run: elector-js 
+        run: elector-dotnet
     spec:
       containers:
       - image: brendanburns/elector
@@ -144,11 +154,8 @@ spec:
         name: elector
         resources: {}
       # Replace the container below with your container.
-      - image: brendanburns/sync-js
+      - image: brendanburns/dotnet-election
         name: example
-        command:
-        - node
-        - elector.js
 ```
 
 ## Technical Details
