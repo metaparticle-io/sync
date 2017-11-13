@@ -7,7 +7,7 @@ for a variety of systems in different languages on top of Kubernetes.
 ## Design
 
 There are two components to the Metaparticle/Sync library:
-   * A shared sidecar container that implements most of the locking logic
+   * A [shared sidecar container](https://github.com/metaparticle-io/container-lib/elector) that implements most of the locking logic
    * Idiomatic language bindings that use the side-car to implement cloud-native locking in a particular language.
 
 ### Sidecar container.
@@ -37,5 +37,12 @@ heartbeatung to the sidecar container, which in turn heart-beats to the
 sidecar lock container.
 
 ### Protocol
-The sidecar exposes a simple HTTP based protocol. A `GET` to `http://localhost:8080/locks/<name>` returns the info about a given lock.  A `PUT` to `http://localhost:8080/locks/<name>` attempts to create the lock, or heartbeats if the
-lock already exists.
+The sidecar exposes a simple HTTP based protocol on `http://localhost:8080`.
+ 
+   * A `GET` to `http://localhost:8080/locks/<name>` returns if the lock exists.
+ If the lock exists, a `200` is returned. Otherwise a `404` is returned.
+   * A `PUT` to `http://localhost:8080/locks/<name>` attempts to create the lock, or heartbeats if the lock already exists. The `PUT` returns:
+      * `200` if the create or heartbeat succeeds
+      * `409` if the attempt to create or heartbeat the lock conflicts with someone else obtaining the lock.
+
+The TTL for the lock is currently hard-coded at 30 seconds.If a heartbeat does not occur in that time-frame, the lock is lost.
