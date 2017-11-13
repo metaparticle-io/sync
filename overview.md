@@ -10,6 +10,8 @@ There are two components to the Metaparticle/Sync library:
    * A [shared sidecar container](https://github.com/metaparticle-io/container-lib/elector) that implements most of the locking logic
    * Idiomatic language bindings that use the side-car to implement cloud-native locking in a particular language.
 
+![Diagram of Metaparticle/Sync operation](images/metaparticle-sync.png)
+
 ### Sidecar container.
 This sidecar container runs next to the main application
 code, and is identical regardless of what idiomatic language binding you are
