@@ -1,9 +1,9 @@
-# Examples MetaParticle Sync library for Dotnet Core
+# Examples MetaParticle Sync library for .NET Core
 
-Metaparticle/Sync for Dotnet Core is a library that implements distributed synchronization
+Metaparticle/Sync for .NET Core is a library that implements distributed synchronization
 for cloud-native applications using a container side-car and Kubernetes primitives.
 
-Metaparticle/Sync for Dotnet Core can be used for [locking](#locking-example) or for
+Metaparticle/Sync for .NET Core can be used for [locking](#locking-example) or for
 [leader election](#election-example)
 
 ## Adding the Library
