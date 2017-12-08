@@ -18,14 +18,14 @@ Metaparticle sync is made up of two components:
      implement synchronization.  Currently languages supported include:
       * [javascript (Nodejs)](javascript)
       * [java](java)
-      * [C#/dotnet core](dotnet)
+      * [C#/.NET Core](dotnet)
 
 ## Examples
 Examples for locking and leader election for each of the supported languages
 can be found in their respective directories.
    * [javascript](javascript/README.md)
    * [java](java/README.md)
-   * [C#/dotnet core](dotnet/README.md)
+   * [C#/.NET Core](dotnet/README.md)
 
 ## Details
 More technical details can be found in the [overview](overview.md).

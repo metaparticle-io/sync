@@ -1,9 +1,9 @@
-# Examples MetaParticle Sync library for Dotnet Core
+# Examples MetaParticle Sync library for .NET Core
 
-Metaparticle/Sync for Dotnet Core is a library that implements distributed synchronization
+Metaparticle/Sync for .NET Core is a library that implements distributed synchronization
 for cloud-native applications using a container side-car and Kubernetes primitives.
 
-Metaparticle/Sync for Dotnet Core can be used for [locking](#locking-example) or for
+Metaparticle/Sync for .NET Core can be used for [locking](#locking-example) or for
 [leader election](#election-example)
 
 ## Adding the Library
@@ -45,8 +45,8 @@ You'll notice that a lock is made up of three things:
    * A callback function to be called when the lock is acquired.
    * An optional callback function to be called when the lock is lost. If this is not supplied, the program will forcibly exit in the (unlikely) case that a lock is lost.
 
-Simply creating a lock doesn't cause mutual exclusion. You also need to call `lock.lock()`. When
-you are done, you call `lock.unlock()` to release the lock. Locks have a TTL (time to live) so
+Simply creating a lock doesn't cause mutual exclusion. You also need to call `lock.WaitOne()`. When
+you are done, you call `lock.Release()` to release the lock. Locks have a TTL (time to live) so
 in the event of a failure, the lock will also be eventually lost.
 
 ### Deploying
