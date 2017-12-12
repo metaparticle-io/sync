@@ -30,7 +30,14 @@ can be found in their respective directories.
 ## Details
 More technical details can be found in the [overview](overview.md).
 
-## Community
-   * Please file [isues or feature requests](https://github.com/metaparticle-io/sync/issues)
-   * Please send Pull Requests!
-   * Please visit us on [Slack](https://slack.metaparticle.io)
+## Contribute
+There are many ways to contribute to Metaparticle
+
+ * [Submit bugs](https://github.com/metaparticle-io/package/issues) and help us verify fixes as they are checked in.
+ * Review the source code changes.
+ * Engage with other Metaparticle users and developers on [gitter](https://gitter.im/metaparticle-io/Lobby).
+ * Join the #metaparticle discussion on [Twitter](https://twitter.com/MetaparticleIO).
+ * [Contribute bug fixes](https://github.com/metaparticle-io/package/pulls).
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto://opencode@microsoft.com) with any additional questions or comments.
+
