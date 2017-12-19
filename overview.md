@@ -7,7 +7,7 @@ for a variety of systems in different languages on top of Kubernetes.
 ## Design
 
 There are two components to the Metaparticle/Sync library:
-   * A [shared sidecar container](https://github.com/metaparticle-io/container-lib/elector) that implements most of the locking logic
+   * A [shared sidecar container](https://github.com/metaparticle-io/container-lib/tree/master/elector) that implements most of the locking logic
    * Idiomatic language bindings that use the side-car to implement cloud-native locking in a particular language.
 
 ![Diagram of Metaparticle/Sync operation](images/metaparticle-sync.png)
