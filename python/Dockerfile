@@ -1,7 +1,5 @@
 FROM python
 
-RUN pip install six
+RUN pip install six metaparticle_sync --no-cache
 COPY examples/*.py /
-RUN mkdir /metparticle_sync
-COPY metaparticle_sync/* /metaparticle_sync/
 

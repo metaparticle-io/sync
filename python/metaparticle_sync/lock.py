@@ -40,6 +40,8 @@ class Lock:
 
         self.running = False
         self.maintainer.join()
+        if self.lock_lost_callback is not None:
+            self.lock_lost_callback()
         self.lock.release()
 
     def _acquire_lock(self):

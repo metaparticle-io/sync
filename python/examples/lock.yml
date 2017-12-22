@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: lock-python
+  name: lock-python
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      run: lock-python
+  template:
+    metadata:
+      labels:
+        run: lock-python
+    spec:
+      containers:
+      - image: brendanburns/elector
+        name: elector
+      # Replace this with your image.
+      - image: brendanburns/sync-python
+        name: example
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "0"
+        command:
+        - python
+        - -u
+        - /lock.py

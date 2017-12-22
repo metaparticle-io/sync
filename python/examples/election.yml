@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: elector-python
+  name: elector-python
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: elector-python
+  template:
+    metadata:
+      labels:
+        run: elector-python
+    spec:
+      containers:
+      - image: brendanburns/elector
+        name: elector
+      # Replace the container below with your container.
+      - image: brendanburns/sync-python
+        name: example
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "0"
+        command:
+        - python
+        - -u
+        - /election.py
