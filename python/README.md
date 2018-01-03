@@ -1,4 +1,4 @@
-# Examples MetaParticle Sync library for Java
+# Examples MetaParticle Sync library for Python
 
 Metaparticle/Sync for Python is a library that implements distributed synchronization
 for cloud-native applications using a container side-car and Kubernetes primitives.
