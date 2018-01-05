@@ -4,15 +4,18 @@ import sys
 import threading
 import time
 
+
 class Lock:
-    def __init__(self, name, base_uri='http://localhost:13131', lock_callback=None, lock_lost_callback=None):
+    def __init__(
+        self, name, base_uri='http://localhost:13131',
+            lock_callback=None, lock_lost_callback=None):
         self.name = name
         self.base_uri = base_uri
         self.maintainer = None
         self.lock = threading.Lock()
         self.running = False
-        self.lock_callback=lock_callback
-        self.lock_lost_callback=lock_lost_callback
+        self.lock_callback = lock_callback
+        self.lock_lost_callback = lock_lost_callback
 
     def acquire(self, blocking=True):
         if not self.lock.acquire(blocking):
@@ -55,7 +58,7 @@ class Lock:
                 if self.lock_callback is not None:
                     self.lock_callback()
                 return True
-        except:
+        except Exception as e:
             print('Unexpected error: {}'.format(sys.exc_info()[0]))
             raise
         return False
@@ -89,12 +92,12 @@ class Lock:
             return ex.code
 
     def _update_lock(self):
-        req = urllib.request.Request(self.base_uri + '/locks/' + self.name, headers={ 'accept': 'application/json' })
+        req = urllib.request.Request(
+            self.base_uri + '/locks/' + self.name,
+            headers={'accept': 'application/json'})
         req.get_method = lambda: 'PUT'
         try:
             res = urllib.request.urlopen(req)
             return res.getcode()
         except urllib.error.HTTPError as ex:
             return ex.code
-
-

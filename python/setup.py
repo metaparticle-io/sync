@@ -18,7 +18,7 @@ setuptools.setup(
     platforms='linux',
     keywords=['kubernetes', 'docker', 'container', 'metaparticle'],
     # latest from https://pypi.python.org/pypi?%3Aaction=list_classifiers
-    classifiers = [
+    classifiers  = [
         'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
@@ -31,5 +31,5 @@ setuptools.setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Utilities',
-        ]
+    ]
 )
