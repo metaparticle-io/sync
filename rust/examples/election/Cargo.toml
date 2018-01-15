@@ -1,0 +1,6 @@
+[package]
+name = "election"
+version = "0.1.0"
+authors = ["Christopher MacGown <ignoti+github@gmail.com>"]
+
+[dependencies]
