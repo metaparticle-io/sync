@@ -4,5 +4,4 @@ version = "0.1.0"
 authors = ["Christopher MacGown <ignoti+github@gmail.com>"]
 
 [dependencies]
-emit = "0.10"
-metaparticle-sync = { path = "../.." }
+"metaparticle-sync" = { path = "../.." }
