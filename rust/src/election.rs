@@ -13,6 +13,38 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use lock;
 
 
+/// Helper macro for invoking election synchronization
+///
+/// # Example
+///
+/// ```
+/// #[macro_use]
+/// extern crate metaparticle_sync;
+///
+/// #[derive(Copy,Clone)]
+/// struct DatabaseMigrator;
+/// impl DatabaseMigrator {
+///     pub fn new() -> Self {
+///         DatabaseMigrator{}
+///     }
+///
+///     pub fn migrate(&self) {
+///         // ... long-lasting work
+///     }
+///
+///     pub fn watch(&self) {
+///         // ... keep an eye on it.
+///     }
+/// }
+///
+/// fn main() {
+///     let migrator = DatabaseMigrator::new();
+///     elect!("database-migration",
+///            || migrator.migrate(),   // This closure is invoked when leader
+///            || migrator.watch());    // This closure is invoked when follower
+/// }
+/// ```
+///
 #[macro_export]
 macro_rules! elect {
     ($name: tt) => ( $crate::Election::new($name,
@@ -43,6 +75,52 @@ macro_rules! elect {
         election
     }};
 }
+
+
+/// Metaparticle.io Election primitive.
+///
+/// As in the `elect!` macro example, you can create an election directly using
+/// the `Election` primitive. It's preferred to use the macro, however.
+///
+/// # Example
+///
+/// ```
+/// extern crate metaparticle_sync as sync;
+///
+/// #[derive(Copy,Clone)]
+/// struct DatabaseMigrator;
+/// impl DatabaseMigrator {
+///     pub fn new() -> Self {
+///         DatabaseMigrator{}
+///     }
+///
+///     pub fn migrate(&self) {
+///         // ... long-lasting work
+///     }
+///
+///     pub fn watch(&self) {
+///         // ... keep an eye on it.
+///     }
+/// }
+///
+/// fn main() {
+///     let migrator = DatabaseMigrator::new();
+///
+///     // Election setup.
+///     let mut elector  = sync::Election::new("database-migration",
+///                                            sync::DEFAULT_BASE_URI,
+///                                            Box::new(||{}),
+///                                            Box::new(||{}));
+///
+///     elector.add_handler(sync::Handler::Leader  , Box::new(|| migrator.migrate()));
+///     elector.add_handler(sync::Handler::Follower, Box::new(|| migrator.watch()));
+///
+///     // ... Do other stuff
+///
+///     elector.run();
+///
+/// }
+/// ```
 
 #[derive(Clone)]
 pub struct Election<'a> {

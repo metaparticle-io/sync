@@ -7,6 +7,15 @@
 // except according to those terms.
 //
 
+//! # Metaparticle/Sync
+//!
+//! `metaparticle_sync` is a library for synchronization across multiple
+//! containers running on different machines.
+//!
+//!
+//!
+
+
 #[macro_use]
 extern crate emit;
 extern crate requests;

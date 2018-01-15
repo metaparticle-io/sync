@@ -19,6 +19,29 @@ use requests::{get, put, Error, StatusCode};
 pub const DEFAULT_BASE_URI: &'static str = "http://localhost:8080";
 
 
+
+/// Helper macro for invoking lock synchronization
+///
+/// # Example
+///
+/// ```
+///
+/// #[ macro_use ]
+/// extern crate metaparticle_sync as sync;
+///
+///
+/// fn main() {
+///     let lock = lock!("some-lock");
+///     lock.lock(|| {
+///         // .. do some work
+///     });
+///
+///     lock!("some-other-lock", || {
+///         // .. do some work
+///     });
+/// }
+/// ```
+///
 #[macro_export]
 macro_rules! lock {
     ($name:tt) => ( $crate::Lock::new($name, $crate::DEFAULT_BASE_URI, 10); );
@@ -35,7 +58,6 @@ pub trait MockableLockClient: Debug+Send+Sync {
 }
 
 
-#[derive(Debug)]
 struct Heartbeat{
     running: AtomicBool,
     wait_interval: u64,
@@ -98,7 +120,66 @@ impl MockableLockClient for Client {
 }
 
 
-#[derive(Debug, Clone)]
+/// Metaparticle.io Lock primitive.
+///
+/// As in the `lock!` macro example, you can create a lock directly using the
+/// `Lock` primitive. In general, the 1-ary instance of the `lock!` macro is
+/// preferable, however.
+///
+/// # Example (preferred)
+/// ```
+/// #[ macro_use ]
+/// extern crate metaparticle_sync as sync;
+///
+/// fn main() {
+///     let lock = lock!("some-held-lock");
+///
+///     // Attempt to lock without retrying.
+///     lock.lock(|| {
+///         // do some important work
+///     });
+///
+///     // Block and attempt to grab the lock up to 10 times.
+///     lock.lock_with_retry(|| {
+///         // do some important work
+///     });
+///
+///     // Block and attempt to grab the lock forever.
+///     lock.lock_with_retry_forever(|| {
+///         // do some important work
+///     });
+/// }
+///
+///
+/// ```
+///
+/// # Example (raw primitives)
+/// ```
+/// extern crate metaparticle_sync as sync;
+///
+/// fn main() {
+///     let interval = 10; // Heartbeat interval
+///     let lock = sync::Lock::new("some-held-lock", sync::DEFAULT_BASE_URI, interval);
+///
+///     // Attempt to lock without retrying.
+///     lock.lock(|| {
+///         // do some important work
+///     });
+///
+///     // Block and attempt to grab the lock up to 10 times.
+///     lock.lock_with_retry(|| {
+///         // do some important work
+///     });
+///
+///     // Block and attempt to grab the lock forever.
+///     lock.lock_with_retry_forever(|| {
+///         // do some important work
+///     });
+/// }
+/// ```
+///
+///
+#[derive(Clone)]
 pub struct Lock {
     name: String,
     base_uri: String,
