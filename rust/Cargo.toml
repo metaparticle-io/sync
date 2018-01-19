@@ -1,0 +1,9 @@
+[package]
+name = "metaparticle-sync"
+exclude = ["examples/*.rs",]
+version = "0.1.0"
+authors = ["Christopher MacGown <ignoti+github@gmail.com>"]
+
+[dependencies]
+emit = "0.10"
+requests = "0.0.30"
