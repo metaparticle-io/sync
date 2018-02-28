@@ -7,10 +7,10 @@ namespace Metaparticle.Sync {
     using System.Threading.Tasks;
 
     public class Lock {
-        private Task Maintainer;
-        private string Name;
-        private bool Running;
-        private string BaseUri;
+        private Task maintainer;
+        private string name;
+        private bool running;
+        private string baseUri;
         public LockListener Listener { set; get; }
 
         private static long WAIT_INTERVAL = 10 * 1000;
@@ -18,8 +18,8 @@ namespace Metaparticle.Sync {
         public Lock(string name) : this(name, "http://localhost:13131") {}
 
         public Lock(string name, string baseUri) {
-            this.Name = name;
-            this.BaseUri = baseUri;
+            this.name = name;
+            this.baseUri = baseUri;
             this.Listener = null;
         }
 
@@ -34,12 +34,12 @@ namespace Metaparticle.Sync {
     
         private bool AcquireLock() {
             HttpStatusCode code = HttpStatusCode.Unused;
-            code = GetLock(Name);
+            code = GetLock(name);
             if (code == HttpStatusCode.NotFound || code == HttpStatusCode.OK) {
-                code = UpdateLock(Name);
+                code = UpdateLock(name);
             }
             if (code == HttpStatusCode.OK) {
-                HoldLock(Name);
+                HoldLock(name);
                 return true;
             }
             return false;
@@ -51,7 +51,7 @@ namespace Metaparticle.Sync {
             do {
                 long sleep = WAIT_INTERVAL;
                 lock(this) {
-                    if (Maintainer != null) {
+                    if (maintainer != null) {
                         throw new InvalidOperationException("Locks are not re-entrant!");
                     }
                     if (AcquireLock()) {
@@ -73,11 +73,11 @@ namespace Metaparticle.Sync {
 
         public void Release() {
             lock(this) {
-                if (Maintainer == null) {
+                if (maintainer == null) {
                     throw new InvalidOperationException("Lock is not held.");
                 }
-                Running = false;
-                Maintainer.Wait(10 * 1000);
+                running = false;
+                maintainer.Wait(10 * 1000);
             } 
         }
 
@@ -87,7 +87,7 @@ namespace Metaparticle.Sync {
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("User-Agent", "Metaparticle Sync Client");
-                var result = client.GetAsync(BaseUri + "/locks/" + name).Result;
+                var result = client.GetAsync(baseUri + "/locks/" + name).Result;
                 return result.StatusCode;
             }
         }
@@ -98,18 +98,18 @@ namespace Metaparticle.Sync {
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("User-Agent", "Metaparticle Sync Client");
-                var result = client.PutAsync(BaseUri + "/locks/" + name, null).Result;
+                var result = client.PutAsync(baseUri + "/locks/" + name, null).Result;
                 return result.StatusCode;
             }
         }
 
         private void HoldLock(string name) {
-            Running = true;
+            running = true;
             if (Listener != null) {
                 Listener.LockAcquired();
             }
-            Maintainer = Task.Run(async () => {
-                while (Running) {
+            maintainer = Task.Run(async () => {
+                while (running) {
                     HttpStatusCode code = GetLock(name);
                     if (code == HttpStatusCode.OK) {
                         code = UpdateLock(name);
@@ -125,7 +125,7 @@ namespace Metaparticle.Sync {
                     }
                     await Task.Delay(10 * 1000);
                 }
-                Maintainer = null;
+                maintainer = null;
                 if (Listener != null) {
                     Listener.LockLost();
                 }
