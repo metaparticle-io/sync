@@ -7,10 +7,10 @@ namespace Metaparticle.Sync {
     using System.Threading.Tasks;
 
     public class Lock {
-        private Task maintainer;
-        private string name;
-        private bool running;
-        private string baseUri;
+        private Task Maintainer;
+        private string Name;
+        private bool Running;
+        private string BaseUri;
         public LockListener Listener { set; get; }
 
         private static long WAIT_INTERVAL = 10 * 1000;
@@ -18,43 +18,43 @@ namespace Metaparticle.Sync {
         public Lock(string name) : this(name, "http://localhost:13131") {}
 
         public Lock(string name, string baseUri) {
-            this.name = name;
-            this.baseUri = baseUri;
+            this.Name = name;
+            this.BaseUri = baseUri;
             this.Listener = null;
         }
 
         public void WaitOne() {
-            while (!lockInternal(true, -1).Result);
+            while (!LockInternal(true, -1).Result);
         }
 
         public bool TryWait() {
-            return lockInternal(false, 0).Result;
+            return LockInternal(false, 0).Result;
         }
 
     
-        private bool acquireLock() {
+        private bool AcquireLock() {
             HttpStatusCode code = HttpStatusCode.Unused;
-            code = getLock(name);
+            code = GetLock(Name);
             if (code == HttpStatusCode.NotFound || code == HttpStatusCode.OK) {
-                code = updateLock(name);
+                code = UpdateLock(Name);
             }
             if (code == HttpStatusCode.OK) {
-                holdLock(name);
+                HoldLock(Name);
                 return true;
             }
             return false;
         }
 
-        private async Task<bool> lockInternal(bool retry, long timeoutMillis) {
-             Stopwatch watch = new Stopwatch();
+        private async Task<bool> LockInternal(bool retry, long timeoutMillis) {
+            Stopwatch watch = new Stopwatch();
             watch.Start();   
             do {
                 long sleep = WAIT_INTERVAL;
                 lock(this) {
-                    if (maintainer != null) {
+                    if (Maintainer != null) {
                         throw new InvalidOperationException("Locks are not re-entrant!");
                     }
-                    if (acquireLock()) {
+                    if (AcquireLock()) {
                         return true;
                     }
                     if (retry) {
@@ -73,51 +73,51 @@ namespace Metaparticle.Sync {
 
         public void Release() {
             lock(this) {
-                if (maintainer == null) {
+                if (Maintainer == null) {
                     throw new InvalidOperationException("Lock is not held.");
                 }
-                running = false;
-                maintainer.Wait(10 * 1000);
+                Running = false;
+                Maintainer.Wait(10 * 1000);
             } 
         }
 
-        private HttpStatusCode getLock(string name) {
+        private HttpStatusCode GetLock(string name) {
             using (var client = new HttpClient()) {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("User-Agent", "Metaparticle Sync Client");
-                var result = client.GetAsync(baseUri + "/locks/" + name).Result;
+                var result = client.GetAsync(BaseUri + "/locks/" + name).Result;
                 return result.StatusCode;
             }
         }
 
-        private HttpStatusCode updateLock(string name) {
+        private HttpStatusCode UpdateLock(string name) {
             using (var client = new HttpClient()) {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Add("User-Agent", "Metaparticle Sync Client");
-                var result = client.PutAsync(baseUri + "/locks/" + name, null).Result;
+                var result = client.PutAsync(BaseUri + "/locks/" + name, null).Result;
                 return result.StatusCode;
             }
         }
 
-        private void holdLock(string name) {
-            running = true;
+        private void HoldLock(string name) {
+            Running = true;
             if (Listener != null) {
-                Listener.lockAcquired();
+                Listener.LockAcquired();
             }
-            maintainer = Task.Run(async () => {
-                while (running) {
-                    HttpStatusCode code = getLock(name);
+            Maintainer = Task.Run(async () => {
+                while (Running) {
+                    HttpStatusCode code = GetLock(name);
                     if (code == HttpStatusCode.OK) {
-                        code = updateLock(name);
+                        code = UpdateLock(name);
                     }
                     if (code != HttpStatusCode.OK) {
                         Console.WriteLine("Unexpected status: " + code);
                         if (Listener != null) {
-                            Listener.lockLost();
+                            Listener.LockLost();
                             return;
                         } else {
 //                                    Environment.Exit(0);
@@ -125,9 +125,9 @@ namespace Metaparticle.Sync {
                     }
                     await Task.Delay(10 * 1000);
                 }
-                maintainer = null;
+                Maintainer = null;
                 if (Listener != null) {
-                    Listener.lockLost();
+                    Listener.LockLost();
                 }
             });
         }

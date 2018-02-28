@@ -4,67 +4,67 @@ namespace Metaparticle.Sync {
     using System.Threading.Tasks;
     
     public class Election : LockListener {
-        private Lock lck;
-        private Action electedAction;
-        private Action terminateAction;
+        private Lock Lock;
+        private Action ElectedAction;
+        private Action TerminateAction;
         // End signal is used to verify that the electedAction terminates properly when terminateAction
         // is called.
-        private Object endSignal;
-        private bool done;
-        private bool running;
+        private Object EndSignal;
+        private bool Done;
+        private bool Running;
     
         public Election(string name, Action electedAction, Action terminateAction) :
             this(name, "http://localhost:13131", electedAction, terminateAction) {}
 
         public Election(string name, string baseUrl, Action electedAction, Action terminateAction) {
-            this.lck = new Lock(name, baseUrl);
-            this.lck.Listener = this;
-            this.electedAction = electedAction;
-            this.terminateAction = terminateAction;
-            this.endSignal = new Object();
+            this.Lock = new Lock(name, baseUrl);
+            this.Lock.Listener = this;
+            this.ElectedAction = electedAction;
+            this.TerminateAction = terminateAction;
+            this.EndSignal = new Object();
         }
 
         public void Shutdown() {
-            running = false;
-            lock (lck) {
-                Monitor.Pulse(lck);
+            Running = false;
+            lock (Lock) {
+                Monitor.Pulse(Lock);
             }
         }
 
         public void Run() {
-            running = true;
-            while (running) {
-                lck.WaitOne();
-                lock (lck) {
-                    Monitor.Wait(lck);
+            Running = true;
+            while (Running) {
+                Lock.WaitOne();
+                lock (Lock) {
+                    Monitor.Wait(Lock);
                 }
             }
-            lck.Release();
+            Lock.Release();
         }
 
-        public void lockAcquired() {
+        public void LockAcquired() {
             Task.Run(() => {
-                done = false;
-                electedAction();
-                lock (endSignal) {
-                    Monitor.Pulse(endSignal);
-                    done = true;
+                Done = false;
+                ElectedAction();
+                lock (EndSignal) {
+                    Monitor.Pulse(EndSignal);
+                    Done = true;
                 }
             });
         }
 
-        public void lockLost() {
-            lock (endSignal) {
-                terminateAction();
+        public void LockLost() {
+            lock (EndSignal) {
+                TerminateAction();
                 // TODO: make this configurable?
                 Task.Delay(1000).Wait();
-                if (!done) {
+                if (!Done) {
                     Console.WriteLine("Master didn't terminate in expected time, force terminating.");
                     //Application.exit(1);
                 }
             }
-            lock (lck) {
-                Monitor.Pulse(lck);
+            lock (Lock) {
+                Monitor.Pulse(Lock);
             }
         }
     }
