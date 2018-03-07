@@ -42,7 +42,7 @@ namespace Metaparticle.Sync {
             lck.Release();
         }
 
-        public void lockAcquired() {
+        public void LockAcquired() {
             Task.Run(() => {
                 done = false;
                 electedAction();
@@ -53,7 +53,7 @@ namespace Metaparticle.Sync {
             });
         }
 
-        public void lockLost() {
+        public void LockLost() {
             lock (endSignal) {
                 terminateAction();
                 // TODO: make this configurable?
