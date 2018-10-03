@@ -131,6 +131,7 @@ pub struct Election<'a> {
     follower_fn: Arc<Box<Fn() -> () + Send + Sync + 'a>>,
 }
 
+#[derive(Copy, Clone)]
 pub enum Handler {
     Leader,
     Follower,
