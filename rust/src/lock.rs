@@ -16,7 +16,7 @@ use std::time::{Duration};
 use requests::{get, put, Error, StatusCode};
 
 
-pub const DEFAULT_BASE_URI: &'static str = "http://localhost:8080";
+pub const DEFAULT_BASE_URI: &str = "http://localhost:8080";
 
 
 
