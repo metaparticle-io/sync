@@ -156,11 +156,10 @@ impl<'a> Election<'a> {
         let leader_fn = self.leader_fn.clone();
         let follower_fn = self.follower_fn.clone();
         self.running.store(true, Ordering::Relaxed);
-        while self.is_running() {
+        if self.is_running() {
             self.lock.lock(|| leader_fn());
 
             follower_fn();
-            break;
         }
     }
 
