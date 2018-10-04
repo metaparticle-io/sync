@@ -20,6 +20,7 @@ Metaparticle sync is made up of two components:
       * [python](python)
       * [java](java)
       * [C#/.NET Core](dotnet)
+      * [Rust](rust)
 
 ## Examples
 Examples for locking and leader election for each of the supported languages
@@ -28,6 +29,7 @@ can be found in their respective directories.
    * [python](python/README.md)
    * [java](java/README.md)
    * [C#/.NET Core](dotnet/README.md)
+   * [Rust](rust/README.md)
 
 ## Details
 More technical details can be found in the [overview](overview.md).
