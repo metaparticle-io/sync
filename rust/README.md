@@ -15,7 +15,7 @@ metaparticle_sync = "0.1"
 
 ## metaparticle_sync in action
 
-```
+```rust
 #[macro_use]
 extern crate metaparticle_sync as sync;
 
